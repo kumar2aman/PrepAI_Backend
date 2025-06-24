@@ -1,7 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Prompt } from "./prompt";
 
-const ai = new GoogleGenerativeAI("your api key");
+import "dotenv/config";
+
+
+const ai = new GoogleGenerativeAI(`${process.env.GEMINI_API_KEY}`);
 
 const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
 
