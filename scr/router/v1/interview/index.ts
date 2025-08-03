@@ -1,77 +1,110 @@
-import "dotenv/config";
-import { GoogleGenAI } from "@google/genai";
+// import "dotenv/config";
+// import { GoogleGenAI } from "@google/genai";
 
-import { Router } from "express";
-import { Main } from "../../../config/google";
+// import { Router } from "express";
+// import { Main } from "../../../config/google";
 
-import * as fs from "fs/promises";
-import { saveWaveFile } from "../../../lib/saveWavFile";
+// import * as fs from "fs/promises";
+// import { saveWaveFile } from "../../../lib/saveWavFile";
 
-const router = Router();
+// const router = Router();
 
-router.post("/interview", async (req, res) => {
-  const userText = req.body.name;
+// router.get("/interview", async (req, res) => {
+//   const userText = req.body.name;
 
-  const AIText = await Main(userText);
+//   const AIText = await Main(userText);
 
-  console.log(AIText);
+//   console.log(AIText);
 
-  async function TTS() {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+//   async function TTS() {
 
-    const aiQustions = await AIText;
+//     const startTime  = Date.now();
+//     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
-      contents: [
-        {
-          parts: [
-            {
-              text: `${aiQustions}`,
-            },
-          ],
-        },
-      ],
-      config: {
-        responseModalities: ["AUDIO"],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: "Kore" },
-          },
-        },
-      },
-    });
+//     const aiQustions = await AIText;
 
-    console.log("response", response);
+//     console.log(`--- Starting TTS for text: "${aiQustions?.substring(0, 50)}..."`);
 
-    const data: any =
-      response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+//     const apiCallStart = Date.now();
 
-    const audioBuffer = Buffer.from(data, "base64");
-    console.log("Base64 data length:", data.length);
-    console.log("Decoded buffer length:", audioBuffer);
-    const fileName = "out.wav";
+//     const response = await ai.models.generateContent({
+//       model: "gemini-2.5-flash-preview-tts",
+//       contents: [
+//         {
+//           parts: [
+//             {
+//              text: `hello `,
+//             },
+//           ],
+//         },
+//       ],
+//       config: {
+//         responseModalities: ["AUDIO"],
+//         speechConfig: {
+//           voiceConfig: {
+//             prebuiltVoiceConfig: { voiceName: "Kore" },
+//           },
+//         },
+//       },
+//     });
 
-    await saveWaveFile(fileName, audioBuffer);
+//     const apiCallEnd = Date.now();
 
-    const fullWavFileBuffer = await fs.readFile(fileName);
+//     console.log(`1. Gemini API call time: ${apiCallEnd - apiCallStart}ms`);
 
-    const base64Audio = fullWavFileBuffer.toString("base64");
+//     const data: any =
+//       response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
 
-    console.log("base64Audio is" + base64Audio.length);
+//     const audioBuffer = Buffer.from(data, "base64");
+//     console.log("Base64 data length:", data.length);
+//     console.log("Decoded buffer length:", audioBuffer);
 
-    await fs.unlink(fileName);
+//     const saveFileStart = Date.now();
+//     const fileName = "out.wav";
 
-    return base64Audio;
-  }
+//     await saveWaveFile(fileName, audioBuffer);
 
-  const AiAudio = await TTS();
+//     const saveFileEnd = Date.now();
 
-  res.json({
-    message: "hello world",
-    //AIText: AIText,
-    AIAudio: AiAudio,
-  });
-});
+//     console.log(`2. saveWaveFile time: ${saveFileEnd - saveFileStart}ms`);
 
-export { router };
+//     const readFileStart = Date.now();
+
+//     const fullWavFileBuffer = await fs.readFile(fileName);
+
+//     const readFileEnd = Date.now();
+
+//     console.log(`3. fs.readFile time: ${readFileEnd - readFileStart}ms`);
+//     console.log(`   Read full WAV file buffer length: ${fullWavFileBuffer.length}`);
+
+
+   
+//     const encodeStart = Date.now();
+//     const base64Audio = fullWavFileBuffer.toString("base64");
+//     const encodeEnd = Date.now();
+//     console.log(`4. Base64 encoding time: ${encodeEnd - encodeStart}ms`);
+//     console.log(`   Final Base64Audio string length: ${base64Audio.length}`);
+
+//     console.log(`   Read full WAV file buffer length: ${fullWavFileBuffer.length}`);
+
+
+
+//     await fs.unlink(fileName);
+
+//     const totalEndTime = Date.now();
+
+//     console.log(`--- Total TTS function execution time: ${totalEndTime - startTime}ms ---`);
+
+//     return base64Audio;
+//   }
+
+//   const AiAudio = await TTS();
+
+//   res.json({
+//     message: "hello world",
+//     //AIText: AIText,
+//     AIAudio: AiAudio,
+//   });
+// });
+
+// export { router };
