@@ -114,6 +114,9 @@ export function wsListener(wss: WebSocketServer) {
 
         const base64Audio = rawPcmBuffer.toString("base64");
 
+const decodedText = Buffer.from(base64Audio, "base64").toString("utf-8");
+console.log("decode audio to text is ", decodedText);
+
         // Clear previous turn's audio chunks and prepare for the new turn
         socket.currentTurnAudioChunks = [];
 
@@ -152,7 +155,7 @@ export function wsListener(wss: WebSocketServer) {
           wf.fromScratch(1, 24000, "16", audioInt16);
 
           // Generate a unique filename (e.g., using a timestamp)
-          const filename = `out.wav`;
+          const filename = `gemini_response_${Date.now()}.wav`;
           fs.writeFileSync(filename, wf.toBuffer());
           console.log(`Saved Gemini response to ${filename}`);
         } else {

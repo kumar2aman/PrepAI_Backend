@@ -1,4 +1,4 @@
-// src/services/geminiLiveService.ts
+import "dotenv/config"
 import { GoogleGenAI, Modality } from "@google/genai";
 import { Prompt } from "../config/prompt";
 
@@ -9,7 +9,7 @@ export class GeminiLiveService {
     private liveConfig: { responseModalities: Modality[]; systemInstruction: string };
 
     constructor(apiKey: string) {
-        this.ai = new GoogleGenAI({ apiKey });
+        this.ai = new GoogleGenAI({ apiKey:process.env.GEMINI_API_KEY_TTS });
         this.liveConfig = {
             responseModalities: [Modality.AUDIO, Modality.TEXT],
             systemInstruction: Prompt,

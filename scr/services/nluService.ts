@@ -1,13 +1,14 @@
-// src/services/nluService.ts
-import { GoogleGenAI } from "@google/genai";
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { SCORING_RUBRIC, EXPECTED_SCORE_JSON_FORMAT } from "../config/scoringRubric";
 
 export class NluService {
-    private ai: GoogleGenAI;
+    private ai: GoogleGenerativeAI;
     private nluModel: string;
 
     constructor(apiKey: string, modelName: string = "gemini-pro") {
-        this.ai = new GoogleGenAI({ apiKey });
+        //@ts-ignore
+        this.ai = new GoogleGenerativeAI({ apiKey});
         this.nluModel = modelName;
     }
 
@@ -16,7 +17,7 @@ export class NluService {
         candidateAnswer: string,
         history: { role: string; parts: { text: string }[] }[]
     ): Promise<any> {
-        const nluModelInstance = this.ai.models.getGenerativeModel(this.nluModel);
+       const nluModelInstance = this.ai.getGenerativeModel({ model: this.nluModel });
 
         const prompt = `
         You are an AI interviewer evaluating a candidate's response.
@@ -35,7 +36,7 @@ export class NluService {
 
         try {
             const result = await nluModelInstance.generateContent(prompt);
-            const responseText = result.response.text;
+            const responseText = result.response.text();
             console.log("Raw NLU model response:", responseText);
 
             let jsonString = responseText.replace(/```json\n?|\n?```/g, '').trim();

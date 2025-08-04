@@ -1,33 +1,35 @@
+import "dotenv/config"
 import express from "express";
 import cors from "cors";
-import { router, wsListener } from "./router/v1/live";
+import {  wsListener } from "./router/v1/live";
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
 
 
 
 const app = express();
-
 const PORT = 8080;
 
- const server = createServer(app)
+// Create HTTP server to attach WebSocket to
+const server = createServer(app);
+
+// Create WebSocket server
+export const wss = new WebSocketServer({ server, path: "/aireq" });
 
 
-export const wss = new WebSocketServer({server, path:"/aireq"})
+// ✅ Pass all required arguments to wsListener
+wsListener(wss);
 
-wsListener(wss)
-// app.use(express.json()); // This replaces bodyParser.json()
-// app.use(express.urlencoded({ extended: true })); // For form data
-
+// CORS setup
 app.use(cors({
-  origin:"http://localhost:5173",
-  credentials:true
+  origin: "http://localhost:5173",
+  credentials: true
 }));
 
+// API routing
+// app.use("/api/v1", router);
 
-
-app.use("/api/v1", router);
-
+// Start server
 server.listen(PORT, () => {
-  console.log("Server is running on port 8080");
+  console.log(`Server is running on port ${PORT}`);
 });
